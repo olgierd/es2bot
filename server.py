@@ -5,7 +5,7 @@ import re
 
 MSGPREFIX = ",,BB,,"
 MSGEND = ",,EE,,"
-BUFLEN = 80 
+BUFLEN = 200 
 
 def rxloop(fld_port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -35,14 +35,22 @@ def rxloop(fld_port):
 def parse_buf(msg):
     res = re.findall(MSGPREFIX+".+"+MSGEND, msg)
     if len(res) > 0:
-        print("Message received")
         message = res[0][len(MSGPREFIX):-len(MSGEND)]
-        print(message)
+        print("Message received:", message)
         return True
     else:
         return None
 
+def read_creds(filename):
+    creds = {}
+    for x in open(filename).read().splitlines():
+        if len(x) > 0:
+            d = x.split(':')
+            creds[d[0]] = d[1]
+    return creds
+
 def parse_command(command):
     return "XD"
 
-rxloop(7324)
+creds = read_creds('people.txt')
+rxloop(7324, creds)
